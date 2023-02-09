@@ -4,18 +4,19 @@ const Joi = require('@hapi/joi')
 const bcrypt = require('bcrypt')
 const Jwt = require('jsonwebtoken')
 
+//Objetos registro
 const schemaRegister = Joi.object({
     name: Joi.string().min(6).max(255).required(),
     lastname: Joi.string().max(255).required(),
     email: Joi.string().max(1024).required(),
     password: Joi.string().min(6).required()
 })
-
+//Objetos entrar
 const schemaLogin = Joi.object({
     email: Joi.string().max(1024).required(),
     password: Joi.string().min(6).required()
 })
-
+//Objetos actualizar
 const schemaUpdate = Joi.object({
     id: Joi.string().max(1024).required(),
     name: Joi.string().min(6).max(255).required(),
@@ -40,7 +41,7 @@ router.post('/register', async(req, res) =>{
             error: "El correo ya existe" 
         })
     }
-
+     //Saltos del encriptado
     const salt = await bcrypt.genSalt(10)
     const passwordEncriptado = await bcrypt.hash(req.body.password, salt)
 
@@ -50,8 +51,8 @@ router.post('/register', async(req, res) =>{
         email: req.body.email,
         password: passwordEncriptado,
     })
-
-    try {
+    //Mensaje de guardado y error
+    try { 
        const guardado = await usuario.save()
        res.json({
         message: 'Success',
@@ -66,6 +67,7 @@ router.post('/register', async(req, res) =>{
 })
 
 router.post('/login', async(req, res) => {
+    //validacion
     const { error } = schemaLogin.validate(req.body)
     if (error){
       return res.status(400).json({
@@ -101,6 +103,7 @@ router.post('/login', async(req, res) => {
 })    
 
 router.get('/getallusers', async (req, res) =>{
+    //muestra todos los usuarios
     const users = await User.find()
 
     if (users){
@@ -116,6 +119,7 @@ router.get('/getallusers', async (req, res) =>{
 })
     
 router.post('/eraseuser', async (req, res) => {
+    //borra un usuario
     const id = req.body.id
 
     const erased = await User.findByIdAndDelete(id)
@@ -133,7 +137,7 @@ router.post('/eraseuser', async (req, res) => {
 })
 
 router.post('/updateuser', async(req, res) =>{
-    //validacion de usuario
+    //actualiza el usuario
     const { error } = schemaUpdate.validate(req.body)
     if (error){
         return res.status(400).json({
@@ -147,7 +151,7 @@ router.post('/updateuser', async(req, res) =>{
             error: "El correo ya existe, no podemos actualizar el usuario" 
         })
     }
-
+    //salto de ncriptado
     const salt = await bcrypt.genSalt(10)
     const passwordEncriptado = await bcrypt.hash(req.body.password, salt)
 
@@ -164,7 +168,7 @@ router.post('/updateuser', async(req, res) =>{
         usuario, 
         {new: true})
 
-
+        //mensaje de actualizado y error
        res.json({
         message: 'Success Update',
         data: actualizado
