@@ -11,7 +11,7 @@ app.use(bodyparser.urlencoded({
 }))
 app.use(bodyparser.json())
 
-//Conexion a la base de datos 
+//Conexion a la base de datos y cambios
 const url = `mongodb+srv://${process.env.USUARIO}:${process.env.PASSWORD}@cluster0.nkimxht.mongodb.net/${process.env.DBNAME}`
 mongoose.connect(url, {
     useNewUrlParser: true,
@@ -33,7 +33,7 @@ app.get('/', (req, res) => {
     })
 })
 
-//Arrancar el servidor
+//Arrancar el servidor 
 const PORT = process.env.PORT || 9000
 app.listen(PORT, () => {
     console.log(`Escuchando en el puerto: ${PORT}`)
